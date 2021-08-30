@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Slf4j
 @Getter
 @Entity
+// @NoArgsConstructor는 jpa를 사용하기 위해 존재
 @NoArgsConstructor
 @Table(name = "partners")
 public class Partner extends AbstractEntity {
