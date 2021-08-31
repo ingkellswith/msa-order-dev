@@ -23,6 +23,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.flywaydb:flyway-core'
 
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // NotEmpty
+
 	//entity, service 구현
 	//common-lang3는 isEmpty에서 사용
 	//guava는 랜덤스트링에서 사용
