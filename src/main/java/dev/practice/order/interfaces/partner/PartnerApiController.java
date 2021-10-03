@@ -20,6 +20,9 @@ public class PartnerApiController {
 
     @PostMapping
     public CommonResponse registerPartner(@RequestBody @Valid PartnerDto.RegisterRequest request) {
+        // 1. 외부에서 전달된 파라미터 (dto) -> Command, Criteria convert
+        // 2. facade 호출
+        // 3. PartnerInfo -> CommonResponse convert AND return
         var command = request.toCommand();
         var partnerInfo = partnerFacade.registerPartner(command);
         var response = new PartnerDto.RegisterResponse(partnerInfo);

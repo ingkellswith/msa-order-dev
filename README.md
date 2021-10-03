@@ -60,16 +60,18 @@ public String completeOrder(OrderCommand.RegisterOrder registerOrder){
 
 예시
 
-if가 존재할 메소드(지양)
+if가 존재할 메소드(**지양**)
 ```text
 // isAgreement가 true이면 동의처리, false면 거부처리
 public void processReceiveAgreement(String userId, boolean isAgreement){
 }
 ```
-if가 존재하지 않을 메소드(추천)
+if가 존재하지 않을 메소드(**추천**)
 ```text
 public void receiveAgreement(String userId){
 }
 public void receiveDisAgreement(String userId){
 }
 ```
+
+![domaindiagram](https://user-images.githubusercontent.com/55550753/135727190-5712c26f-208a-438c-81f5-c5d616e2f547.PNG)
