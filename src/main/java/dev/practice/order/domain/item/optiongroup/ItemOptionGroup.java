@@ -48,6 +48,9 @@ public class ItemOptionGroup extends AbstractEntity {
 
     public ItemOptionGroup addItemOption(ItemOption itemOption) {
         this.itemOptionList.add(itemOption);
+        // 양방향이라면 아래에 itemOption의 ItemOptionGroup을 set해야 하는데
+        // entity에는 setter를 두지 않았다.
+        // set이 필요하다면 update(String title, String content)같은 메소드를 구현해야함
         return this;
     }
 }

@@ -41,5 +41,6 @@ public class ItemOptionSeriesFactoryImpl implements ItemOptionSeriesFactory {
 
                     return itemOptionGroup;
                 }).collect(Collectors.toList());
+        // kotlin에서는 stream -> map -> collect할 필요없이 map만 사용하면 됨
     }
 }
