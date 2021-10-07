@@ -15,12 +15,12 @@ spring:
       jdbc-url: jdbc:mysql://localhost:3307/order?serverTimezone=UTC&characterEncoding=UTF-8
       username: order-svc
       password: order-pass
-  flyway:
-    user: order-svc
-    password: order-pass
-    schemas: order
-    url: jdbc:mysql://localhost:3307/order?serverTimezone=UTC&characterEncoding=UTF-8
-    enabled: true
+#  flyway:
+#    user: order-svc
+#    password: order-pass
+#    schemas: order
+#    url: jdbc:mysql://localhost:3307/order?serverTimezone=UTC&characterEncoding=UTF-8
+#    enabled: true
 
 #  h2:
 #    console:
