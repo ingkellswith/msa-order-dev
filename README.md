@@ -2,7 +2,7 @@ msa-order-dev
 ==============
 (수강 강의 - 패스트캠퍼스, The RED : 비즈니스 성공을 위한 Java/Spring 기반 서비스 개발과 MSA 구축 by 이희창)
 
-이 repository는 msa, ddd를 학습하는 곳입니다.  
+repository 주제 : ddd, msa 구현
 
 # 애플리케이션 레이어 구조
 |레이어|설명|주요 객체|
@@ -73,5 +73,68 @@ public void receiveAgreement(String userId){
 public void receiveDisAgreement(String userId){
 }
 ```
+# 프로젝트의 도메인은 파트너, 상품, 주문 총 3개로 구성
 
 ![domaindiagram](https://user-images.githubusercontent.com/55550753/135727190-5712c26f-208a-438c-81f5-c5d616e2f547.PNG)
+
+# 프로젝트 세부 구현
+![ddd-specific-layer](https://user-images.githubusercontent.com/55550753/136355644-4146b1ea-57b3-43fa-bedc-1ba080f159d1.PNG)
+1. 단일 엔티티(파트너)와 aggregate root(Item, Order)에는 토큰값을 사용하는 대체키 구현
+> 보안 향상을 위해 사용
+> 외부에 api오픈 시 대체키 사용, 내부적으로 호출할때는 id(PK) 사용해도 상관없음
+2. created_at, updated_at은 공통적으로 사용하는 부분이 많으므로 @MappedSuperClass를 선언해 상속해서 사용
+> 시간은 글로벌 진출도 고려한 확장성을 위해 LocalDateTime 대신   
+> ZonedDateTime에 @CreationTimeStamp를 선언해 사용한다.
+```text
+@Getter
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
+public class AbstractEntity {
+
+    @CreationTimestamp
+    private ZonedDateTime createdAt;
+    
+    @UpdateTimestamp
+    private ZonedDateTime updatedAt;
+}
+```
+3. Service 인터페이스를 구현한 ServiceImpl 내부에서도 내부 로직의 추상화 정도를 높여서   
+   인터페이스 메소드를 호출해 사용한다.  
+   ex) Store, Reader 인터페이스 메소드 호출로 구현체 메소드 사용  
+   **얻을 수 있는 이점**  
+> a) 추상화를 높인 내부 서비스 코드는 코드가 읽기 쉬워진다. 유지보수가 쉬워지는 것은 덤.  
+> b) 로직 수정이 필요할 때 도메인 코드는 건드리지 않고 infrastructure 레이어의 코드만 수정하면 된다.   
+
+4. CommonResponse를 사용해 응답값 규격화  
+5. ControllerAdvice와 직접 정의한 exception 를 사용해 미리 예상된 예외 처리를 가능하게 함  
+> 이 과정에서 개발자가 직접 정의하지 않은 exception에 대해서는 모니터링이 필요한 부분이다.  
+6. Aggregate 외부에서는 Aggregate root(Aggregate당 1개만 존재)를 제외한 내부 Aggregate 요소들을 참조할 수 없다.
+> Item 을 획득하면 Aggregate 내부의 객체를 탐색해서 획득할 수 있게 된다
+7. Aggregate 내부 요소들을 인스턴스화할 때 Factory를 사용한다.
+> 자신의 책임과 역할이 다른 객체를 생성하는 프로그램 요소를 Factory 라고 하는데,  
+복잡한 객체와 Aggregate 인스턴스를 생성하는 책임을 맡기기에 적합하다
+8. MapStruct를 사용해 레이어간 전달 객체 타입 변환 간소화
+> https://mapstruct.org/ (MapStruct in 2 minutes) <- 세부 사용법 참고  
+9. 보상 트랜잭션 최소화
+> 보상 트랜잭션이란 이전에 커밋된 트랜잭션을 취소하는 것인데 데이터베이스 롤백과 일치하는 경우가 존재한다.  
+> 보상 트랜잭션 또한 추가적인 로직이므로 최소한으로 하는 것이 좋다.  
+> ex) 결제 완료 -> 포인트 지급 -> 배송 준비중   
+배송 준비중의 경우 상품 품절로 인한 예외가 자주 발생할 수 있다고 가정.    
+결제 완료 → 배송 준비중 → 포인트 지급 이라는 비즈니스 순서만   
+바꾸어도 배송 준비중 과정에서 예외가 발생하더라도 포인트 지급에 대한 보상트랜잭션,   
+> 즉 포인트 회수라는 프로세스 실행은 하지 않아도 되는 로직 개선이 이루어지게 된다.    
+> **OrderServiceImpl의 paymentOrder메소드 참고**  
+10. 엔티티에서 필수적으로 필요한 필드 또는 항상 같이 존재해야 하는 필드는 @Embedded, @Embeddable을 사용해 객체로 관리한다.
+> Order Entity의 DeliveryFragment를 참고
+11. 주문(Order) 도메인의 가격 계산은 서비스가 아닌 엔티티에서 이루어진다.  
+> Order -> OrderItem -> OrderItemOptionGroup -> OrderItemOption 구조에서    
+> 엔티티에 메소드를 만드는 것만으로 해결가능하다.    
+> (엔티티간 연관관계는 위에서 소개한 Order 도메인 엔티티를 참고)   
+OrderItemOption에서 - 옵션 선택   
+OrderItemOptionGroup - 옵션 그룹 : calculateTotalAmount()로 선택된 옵션의 금액합계 구함   
+OrderItem - 옵션 그룹과 옵션이 선택되어있는 주문상품 : calculateTotalAmount()로 옵션 그룹의 금액합계 구함   
+Order - 주문 : calculateTotalAmount()로 주문한 1개 이상의 주문상품에 대한 금액합계를 구함  
+12. Spring이 제공하는 DI를 활용해 각각의 인터페이스를 구현한 구현체를 List 로 받아 활용한다
+> Order 도메인 layer 구현 후 infrastructure layer의 PaymentProcessorImpl에서 사용    
+
+![orderpaydip](https://user-images.githubusercontent.com/55550753/136385101-1b01a56b-89dd-4681-810d-a349bdaa5c54.PNG)
