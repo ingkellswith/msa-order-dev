@@ -101,7 +101,8 @@ public class AbstractEntity {
 3. Service 인터페이스를 구현한 ServiceImpl 내부에서도 내부 로직의 추상화 정도를 높여서   
    인터페이스 메소드를 호출해 사용한다.  
    ex) Store, Reader 인터페이스 메소드 호출로 구현체 메소드 사용  
-   **얻을 수 있는 이점**  
+
+**얻을 수 있는 이점**  
 > a) 추상화를 높인 내부 서비스 코드는 코드가 읽기 쉬워진다. 유지보수가 쉬워지는 것은 덤.  
 > b) 로직 수정이 필요할 때 도메인 코드는 건드리지 않고 infrastructure 레이어의 코드만 수정하면 된다.   
 
@@ -138,3 +139,5 @@ Order - 주문 : calculateTotalAmount()로 주문한 1개 이상의 주문상품
 > Order 도메인 layer 구현 후 infrastructure layer의 PaymentProcessorImpl에서 사용    
 
 ![orderpaydip](https://user-images.githubusercontent.com/55550753/136385101-1b01a56b-89dd-4681-810d-a349bdaa5c54.PNG)
+
+(**프로젝트 실행은 docker-compose와 flyway를 통해 세팅합니다.**)

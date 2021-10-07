@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.4'
+	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 }
@@ -21,19 +21,26 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // NotEmpty
 
-	//entity, service 구현
+    implementation 'org.flywaydb:flyway-core:7.10.0'
+
+	compileOnly 'org.projectlombok:lombok'
+
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+	annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
+	annotationProcessor(
+			'org.projectlombok:lombok',
+			'org.projectlombok:lombok-mapstruct-binding:0.1.0'
+	)
 	//common-lang3는 isEmpty에서 사용
 	//guava는 랜덤스트링에서 사용
 	implementation 'com.google.guava:guava:28.2-jre'
 	implementation 'org.apache.commons:commons-lang3:3.9'
 
-	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
