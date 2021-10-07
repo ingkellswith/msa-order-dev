@@ -29,12 +29,14 @@ public class OrderServiceImpl implements OrderService {
     public void paymentOrder(OrderCommand.PaymentRequest paymentRequest) {
         var orderToken = paymentRequest.getOrderToken();
         var order = orderReader.getOrder(orderToken);
+        paymentProcessor.pay(order, paymentRequest);
         order.orderComplete();
         // 외부 서비스 호출 시 오류가 발생하지 않으면 그 후에 runtimeexception이 발생해도 외부에서 호출된 로직은 복구되지 않는다.
-        // 따라서 orderComplete이후에 pay를 두어 pay에서 exception이 발생할 경우 롤백되도록 했다.
+        // 따라서 orderComplete이후에 pay를 두어 pay에서 exception이 발생할 경우 롤백되도록 하는 것이 좋다.
+        // ex) order.orderComplete();
+        // paymentProcessor.pay(order, paymentRequest);
         // 이점 : 보상 트랜잭션 로직을 짜지 않아도 됨
         // 단점 : 로직의 순서를 pay -> orderComplete에서 orderComplete -> pay로 바꾸었으므로 순서를 이렇게 해도 되는건지 주의해야 함
-        paymentProcessor.pay(order, paymentRequest);
     }
 
     @Override
