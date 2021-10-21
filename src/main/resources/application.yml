@@ -1,5 +1,6 @@
 server:
   shutdown: graceful
+  port: 8081
 
 spring:
   lifecycle:
@@ -29,3 +30,8 @@ spring:
 
 logging:
   config: classpath:logback-local.xml
+
+cloud:
+  aws:
+    access-key: 액세스키
+    secret-key: 비밀키
