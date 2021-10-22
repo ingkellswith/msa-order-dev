@@ -29,4 +29,10 @@ public class OrderFacade {
         orderService.paymentOrder(paymentRequest);
         notificationService.sendKakao(null, null);
     }
+
+    // 선물 수락 시 선물 받을 사람 정보 업데이트
+    public void updateReceiverInfo(String orderToken, OrderCommand.UpdateReceiverInfoRequest orderCommand) {
+        orderService.updateReceiverInfo(orderToken, orderCommand);
+        notificationService.sendKakao(null, null);
+    }
 }
