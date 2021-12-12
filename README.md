@@ -23,7 +23,7 @@ repository 주제 : ddd, msa 구현
 
 # Infrastructure Layer 구현 규칙
 1. dip 사용
-   > studyground domainDesign(깃북)참고
+   > [studyground-dip](https://allover3773.gitbook.io/study/ddd/domaindesign) 참고
 2. domain layer와 달리 infrastructure layer의 구현체 간에는 참조를 허용
    
 # Application Layer 구현 규칙
